@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, getEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const fields = await getCollection("anwendungsfelder", ({ data }) => !data.draft);
+  return fields.map((f) => ({ params: { slug: f.slug }, props: { entry: f } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+<BaseLayout title={entry.data.title} description={entry.data.lede} active="Anwendungsfelder">
+  <section class="detail-hero">
+    <div class="wrap">
+      <div class="breadcrumb">
+        <a href="/">Start</a><span>/</span>
+        <a href="/anwendungsfelder">Anwendungsfelder</a><span>/</span>
+        <span>{entry.data.title}</span>
+      </div>
+      <div class="eyebrow"><span class="dot"></span>Anwendungsfeld · {entry.data.cat}</div>
+      <h1 class="detail-title">{entry.data.title}</h1>
+      <p class="detail-lede">{entry.data.lede}</p>
+    </div>
+  </section>
+  <article class="wrap detail-body" style="padding: 64px 0; max-width: 720px;">
+    <Content />
+  </article>
+</BaseLayout>

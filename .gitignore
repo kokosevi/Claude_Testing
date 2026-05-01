@@ -1,0 +1,19 @@
+# Dependencies — niemals einchecken!
+node_modules/
+
+# Build outputs
+dist/
+.astro/
+
+# OS / Editor
+.DS_Store
+.vscode/
+*.log
+
+# Env
+.env
+.env.local
+.env.production
+
+# Pagefind index (wird beim Build neu erzeugt)
+public/pagefind/

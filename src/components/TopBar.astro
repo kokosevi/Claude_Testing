@@ -1,0 +1,22 @@
+---
+const { active = "Start" } = Astro.props;
+const items = ["Grundlagen", "Modelle", "Handwerk", "Anwendungsfelder", "Glossar", "Praxis"];
+---
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="/" class="brand">
+      <span class="mark"></span>
+      Sinnorientiert <small>der Hypnosystemik-Hub</small>
+    </a>
+    <nav class="nav">
+      {items.map((x) => (
+        <a href={`/${x.toLowerCase()}`} class={x === active ? "active" : ""}>{x}</a>
+      ))}
+    </nav>
+    <a href="#newsletter" class="topbar-cta">Newsletter</a>
+  </div>
+</header>
+
+<style>
+  /* Styles würden hier aus styles.css migriert werden */
+</style>

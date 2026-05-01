@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const fields = await getCollection("anwendungsfelder", ({ data }) => !data.draft);
+const aktuell = await getCollection("aktuell", ({ data }) => !data.draft);
+
+// Sortierung
+fields.sort((a, b) => a.data.order - b.data.order);
+aktuell.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+<BaseLayout title="Start" active="Start">
+  <!-- Hier werden die Sektionen aus dem Mockup als .astro-Komponenten eingebunden:
+       <Hero />
+       <Pathways />
+       <WhatIs />
+       <Pillars />
+       <Fields fields={fields} />
+       <Practice />
+       <Trust />
+       <Current items={aktuell.slice(0, 3)} />
+       <Newsletter />
+       <Footer />
+  -->
+  <section class="wrap" style="padding: 96px 0;">
+    <div class="eyebrow"><span class="dot"></span>Astro-Site Skeleton</div>
+    <h1 style="font-size: 56px; margin-top: 24px; max-width: 22ch;">
+      Hier wird die Landing Page gerendert — alle Sektionen aus dem Mockup migriert.
+    </h1>
+    <p class="lede" style="margin-top: 24px; max-width: 56ch;">
+      {fields.length} Anwendungsfelder geladen · {aktuell.length} aktuelle Beiträge.
+      Die Inhalte kommen aus <code>src/content/</code> als Markdown.
+    </p>
+  </section>
+</BaseLayout>
