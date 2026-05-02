@@ -1,0 +1,29 @@
+---
+const paths = [
+  { n: "01", title: "Ich bin neu hier", lede: "Ein geführter Einstieg in Haltung, Sprache und Grundideen — ohne Vorwissen.", steps: ["Hypnosystemik in 10 Minuten", "Die fünf wichtigsten Konzepte", "Wie sie sich von anderen Ansätzen unterscheidet"] },
+  { n: "02", title: "Ich coache", lede: "Auftragsklärung, Ressourcenaktivierung, Steuerposition. Werkzeuge für Coaching-Settings.", steps: ["Auftragsklärung Schritt für Schritt", "Entscheidungssituationen begleiten", "Burnout & Selbstfürsorge"] },
+  { n: "03", title: "Ich therapiere", lede: "Klinische Anwendungsfelder, hypnosystemisches Verständnis von Diagnosen, Falldokumentationen.", steps: ["Symptome als Botschafter", "Differenzialdiagnostik konstruktivistisch", "Falldokumentationen aus der Praxis"] },
+  { n: "04", title: "Ich vertiefe", lede: "Theoriediskurse, Forschungsstand, Schnittstellen zu Hirnforschung und Konstruktivismus.", steps: ["Autopoiese & Wirklichkeitskonstruktion", "Netzwerkmodell vertieft", "Aktuelle Forschungsperspektiven"] },
+];
+---
+<section class="pathways">
+  <div class="wrap">
+    <div class="pathways-head">
+      <div><div class="eyebrow"><span class="dot"></span>Wo möchtest du beginnen?</div></div>
+      <div class="ui" style="font-size: 13px; color: var(--ink-3);">Vier Einstiegswege — frei wechselbar.</div>
+    </div>
+    <div class="pathways-grid">
+      {paths.map((p) => (
+        <div class="pathway">
+          <div class="pathway-num">PFAD {p.n}</div>
+          <h3>{p.title}</h3>
+          <p>{p.lede}</p>
+          <div class="pathway-steps">
+            {p.steps.map((s) => <span>{s}</span>)}
+          </div>
+          <span class="pathway-arrow">→</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

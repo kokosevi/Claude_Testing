@@ -1,0 +1,32 @@
+---
+const partners = [
+  ["Milton-Erickson-Institut Heidelberg", "1984"],
+  ["Systelios Klinik", "2008"],
+  ["ISH — International Society of Hypnosis", "1973"],
+  ["Heidelberger Institut für systemische Forschung", "1991"],
+  ["DGH — Deutsche Gesellschaft für Hypnose", "1981"],
+  ["MEG — Milton-Erickson-Gesellschaft", "1978"],
+];
+---
+<section class="trust">
+  <div class="wrap">
+    <div class="trust-grid">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 28px;"><span class="dot"></span>Stimmen aus dem Feld</div>
+        <p class="trust-quote">Hypnosystemisches Arbeiten ist die Kunst, mit Klient:innen so zu sprechen, dass sie das Beste in sich selbst noch einmal kennenlernen können.</p>
+        <div class="trust-cite"><strong>Gunther Schmidt</strong> · Begründer des hypnosystemischen Konzepts · Heidelberg</div>
+      </div>
+      <div>
+        <div class="partners-head">Beirat & Partnerinstitute</div>
+        <div class="partner-list">
+          {partners.map(([n, y]) => (
+            <div class="partner">
+              <span style="font-family: var(--serif); font-size: 16px; color: var(--ink);">{n}</span>
+              <span>est. {y}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

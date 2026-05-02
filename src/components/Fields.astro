@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('anwendungsfelder', ({ data }) => !data.draft);
+all.sort((a, b) => a.data.order - b.data.order);
+
+// Falls noch kein Eintrag in einer Kategorie: Fallback-Beispiele zeigen
+const FALLBACK = [
+  { slug: 'depression', cat: 'Klinisch', name: 'Depression', body: 'Erschöpfung als Hinweis auf nicht gelebte Sehnsüchte und überforderte innere Seiten lesen.', n: 24 },
+  { slug: 'trauma', cat: 'Klinisch', name: 'Trauma', body: 'Stabilisierung, Ressourcenaktivierung und Integration jenseits von Re-Erleben.', n: 19 },
+  { slug: 'schmerzen', cat: 'Klinisch', name: 'Chronische Schmerzen', body: 'Schmerz als Botschaft — körperorientierte und imaginative Zugänge.', n: 16 },
+  { slug: 'trauer', cat: 'Klinisch', name: 'Trauer & Schuld', body: 'Versöhnungsprozesse mit dem Vergangenen, dem Verlorenen, dem Ungelebten.', n: 14 },
+  { slug: 'sucht', cat: 'Klinisch', name: 'Sucht', body: 'Ambivalenzen utilisieren — Rückfälle als Information, nicht als Versagen.', n: 18 },
+  { slug: 'paarkonflikte', cat: 'Beziehung', name: 'Paarkonflikte', body: 'Vom Streit über Inhalte zur Würdigung der dahinterliegenden Bedürfnisse.', n: 11 },
+  { slug: 'ess-bewegung', cat: 'Klinisch', name: 'Ess- & Bewegungsthemen', body: 'Symptome als kompetente Lösungsversuche eines komplexen Beziehungsgeflechts.', n: 9 },
+  { slug: 'entscheidungen', cat: 'Coaching', name: 'Entscheidungssituationen', body: 'Innere Seiten als Stimmrechte — die Entscheidung als Verhandlungsergebnis.', n: 13 },
+  { slug: 'coaching-praxis', cat: 'Coaching', name: 'Coaching-Praxis', body: 'Auftragsklärung, Ressourcen, Steuerposition. Das Handwerk im Coaching-Kontext.', n: 31 },
+  { slug: 'organisationen', cat: 'Organisation', name: 'Team- & Organisationsentwicklung', body: 'Organisationen als Erlebnis-Netzwerke — Konflikte als Information über Bedarfe.', n: 17 },
+];
+
+const real = all.map(e => ({
+  slug: e.slug, cat: e.data.cat, name: e.data.title, body: e.data.lede, n: e.data.beitragCount, isLive: true,
+}));
+
+const seen = new Set(real.map(r => r.slug));
+const merged = [...real, ...FALLBACK.filter(f => !seen.has(f.slug))];
+---
+<section class="fields">
+  <div class="wrap">
+    <div class="fields-head">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 22px;"><span class="dot"></span>Anwendungsfelder</div>
+        <h2 class="section-title">Wo Hypnosystemik konkret arbeitet.</h2>
+      </div>
+      <div class="ui" style="font-size: 13px; color: var(--ink-3);">{merged.length} Felder</div>
+    </div>
+
+    <div class="fields-filter">
+      <button class="is-active" data-filter="Alle">Alle</button>
+      <button data-filter="Klinisch">Klinisch</button>
+      <button data-filter="Coaching">Coaching</button>
+      <button data-filter="Beziehung">Beziehung</button>
+      <button data-filter="Organisation">Organisation</button>
+    </div>
+
+    <div class="fields-grid" id="fields-grid">
+      {merged.map((f) => (
+        <a class="field" href={f.isLive ? `/anwendung/${f.slug}` : '#'} data-cat={f.cat}>
+          <div class="field-cat">{f.cat}</div>
+          <h4>{f.name}</h4>
+          <p>{f.body}</p>
+          <div class="field-meta">
+            <span>{f.n} Beiträge</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const filterBtns = document.querySelectorAll('.fields-filter button');
+  const items = document.querySelectorAll('#fields-grid .field');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.getAttribute('data-filter');
+      filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+      items.forEach(it => {
+        const show = f === 'Alle' || it.getAttribute('data-cat') === f;
+        it.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>

@@ -1,0 +1,108 @@
+---
+const phrases = [
+  "Was ist Hypnosystemik?",
+  "Auftragsklärung Schritt für Schritt",
+  "Symptom als Botschafter",
+  "Steuerposition aufbauen",
+  "Utilisation bei Rückfällen",
+  "Netzwerkmodell der Erlebniserzeugung",
+];
+---
+<div>
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow hero-eyebrow"><span class="dot"></span>Wissen · Methoden · Praxis</div>
+      <h1 class="hero-title">
+        Die Anlaufstelle für <em>Hypnosystemik</em> — innere Welten ernst nehmen, Möglichkeiten erweitern.
+      </h1>
+      <p class="hero-sub">
+        Ein gemeinsamer Hub für Coaches, Therapeut:innen und alle, die verstehen wollen, wie sich Probleme in einen Beitrag verwandeln. Verwurzelt in Erickson, Schmidt und der systemisch-konstruktivistischen Tradition.
+      </p>
+
+      <div class="search" id="hero-search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <input type="text" placeholder="Suche im Hub …" aria-label="Suche" id="hero-search-input" />
+        <span class="search-shortcut">⌘ K</span>
+      </div>
+
+      <div class="search-suggestions">
+        <strong>Häufig gesucht:</strong>
+        <span class="chip">Utilisation</span>
+        <span class="chip">Auftragsklärung</span>
+        <span class="chip">Problem-Trance</span>
+        <span class="chip">Netzwerkmodell</span>
+        <span class="chip">Symptom als Botschafter</span>
+      </div>
+
+      <div class="hero-meta">
+        <span class="ui">412 Beiträge</span>
+        <span class="ui">38 Anwendungsfelder</span>
+        <span class="ui">12 Lehrende</span>
+        <span class="ui">Update wöchentlich</span>
+      </div>
+    </div>
+
+    <div class="hero-figure">
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <radialGradient id="rg" cx="55%" cy="55%" r="60%">
+            <stop offset="0%" stop-color="oklch(0.92 0.014 75)" />
+            <stop offset="100%" stop-color="oklch(0.948 0.010 75)" />
+          </radialGradient>
+        </defs>
+        <rect width="400" height="500" fill="url(#rg)"></rect>
+        <circle cx="220" cy="280" r="40" fill="none" stroke="oklch(0.65 0.012 60)" stroke-width="0.6" opacity="0.5"></circle>
+        <circle cx="220" cy="280" r="80" fill="none" stroke="oklch(0.65 0.012 60)" stroke-width="0.6" stroke-dasharray="2 4" opacity="0.46"></circle>
+        <circle cx="220" cy="280" r="120" fill="none" stroke="oklch(0.65 0.012 60)" stroke-width="0.6" opacity="0.42"></circle>
+        <circle cx="220" cy="280" r="160" fill="none" stroke="oklch(0.52 0.115 35)" stroke-width="1" stroke-dasharray="2 4" opacity="0.38"></circle>
+        <circle cx="220" cy="280" r="200" fill="none" stroke="oklch(0.65 0.012 60)" stroke-width="0.6" opacity="0.34"></circle>
+        <circle cx="220" cy="280" r="240" fill="none" stroke="oklch(0.65 0.012 60)" stroke-width="0.6" stroke-dasharray="2 4" opacity="0.30"></circle>
+        <circle cx="220" cy="280" r="280" fill="none" stroke="oklch(0.65 0.012 60)" stroke-width="0.6" opacity="0.26"></circle>
+        <circle cx="220" cy="120" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="343" cy="178" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="378" cy="307" r="4" fill="oklch(0.52 0.115 35)"></circle>
+        <circle cx="306" cy="416" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="170" cy="438" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="62" cy="357" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="62" cy="203" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="170" cy="122" r="2.4" fill="oklch(0.30 0.012 60)"></circle>
+        <circle cx="220" cy="280" r="6" fill="oklch(0.22 0.012 60)"></circle>
+      </svg>
+      <div class="hero-figure-caption">FIG. 01 — netzwerkmodell der erlebniserzeugung</div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ phrases }}>
+  const input = document.getElementById('hero-search-input');
+  if (input) {
+    let i = 0, text = '', phase = 'typing', focused = false;
+    input.addEventListener('focus', () => { focused = true; input.value = ''; });
+    input.addEventListener('blur', () => { focused = false; input.value = text; });
+
+    function tick() {
+      if (focused) { setTimeout(tick, 200); return; }
+      const target = phrases[i];
+      let delay = 60;
+      if (phase === 'typing') {
+        if (text.length < target.length) {
+          text = target.slice(0, text.length + 1);
+          delay = 40 + Math.random() * 30;
+        } else {
+          phase = 'hold'; delay = 1700;
+        }
+      } else if (phase === 'hold') {
+        phase = 'erasing'; delay = 0;
+      } else if (phase === 'erasing') {
+        if (text.length > 0) { text = text.slice(0, -1); delay = 22; }
+        else { i = (i + 1) % phrases.length; phase = 'typing'; delay = 200; }
+      }
+      input.value = text;
+      setTimeout(tick, delay);
+    }
+    tick();
+  }
+</script>

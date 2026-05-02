@@ -1,0 +1,31 @@
+---
+const cols = [
+  { h: "Hub", items: ["Grundlagen", "Modelle", "Handwerk", "Anwendungsfelder", "Glossar"] },
+  { h: "Praxis", items: ["Fälle", "Demonstrationen", "Audio & Video", "Lehrende"] },
+  { h: "Lernen", items: ["Kurse", "Webinare", "Veranstaltungen", "Leseempfehlungen"] },
+  { h: "Über", items: ["Wer wir sind", "Beirat", "Partner-Institute", "Kontakt", "Praktiker:innen-Verzeichnis"] },
+];
+---
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="color: var(--paper);">
+          <span class="mark"></span>
+          Sinnorientiert
+        </div>
+        <p class="footer-tag">Ein gemeinschaftlich gepflegter Hub für hypnosystemisches Wissen, Methoden und Praxis. Mit Sorgfalt, ohne Eile.</p>
+      </div>
+      {cols.map((c) => (
+        <div>
+          <h5>{c.h}</h5>
+          <ul>{c.items.map((it) => <li><a href="#">{it}</a></li>)}</ul>
+        </div>
+      ))}
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Sinnorientiert · der Hypnosystemik-Hub</span>
+      <span>Impressum · Datenschutz · Barrierefreiheit</span>
+    </div>
+  </div>
+</footer>

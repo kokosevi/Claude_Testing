@@ -1,0 +1,88 @@
+---
+const PILLARS = [
+  { n: "I", title: "Grundlagen & Denken", q: "Was ist das überhaupt?", body: "Begriffe, Wurzeln, Menschenbild. Das Glossar der Kernkonzepte und die Haltung, aus der heraus alles Weitere wächst.", tags: ["Autopoiese", "Utilisation", "Problem-Trance", "Steuerposition", "Potenzialhypothese", "Bezogene Individuation"] },
+  { n: "II", title: "Modelle & Konzepte", q: "Wie funktioniert das?", body: "Das theoretische Rückgrat. Netzwerkmodell der Erlebniserzeugung, Seitenmodell, Pacing & Inviting, Sinnorientierung.", tags: ["Netzwerkmodell", "Seitenmodell", "Pacing & Inviting", "Symptom als Botschafter", "Versöhnung", "Sinnorientierung"] },
+  { n: "III", title: "Handwerk & Methoden", q: "Wie wende ich es an?", body: "Das idealtypische 10-Schritte-Vorgehen, Auftragsklärung, Unterschiedsbildung, körper- und imaginationsbasierte Interventionen.", tags: ["10-Schritte-Vorgehen", "Auftragsklärung", "Unterschiedsbildung", "Imagination", "Metaphern", "Selbstfürsorge"] },
+  { n: "IV", title: "Anwendungsfelder", q: "Wo zeigt sich das in der Praxis?", body: "Hypnosystemik im konkreten Einsatz — von Angst über Trauer bis zu Team- und Organisationsentwicklung.", tags: ["Depression", "Angst & Panik", "Trauma", "Schmerzen", "Sucht", "Burnout", "Coaching", "Organisationen"] },
+];
+---
+<section class="pillars" id="pillars">
+  <div class="wrap">
+    <div class="pillars-head">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 24px;"><span class="dot"></span>Vier Säulen</div>
+        <h2 class="section-title">Das gesamte Feld — in vier inhaltlichen Säulen.</h2>
+      </div>
+      <div>
+        <p>Die Hauptnavigation des Hubs. Jede Säule beantwortet eine andere Leitfrage und kann in eigenem Tempo erschlossen werden — alle Wege führen ineinander.</p>
+        <div class="display-switch" role="tablist" aria-label="Darstellung">
+          <button data-mode="cards" class="is-active">Karten</button>
+          <button data-mode="list">Liste</button>
+          <button data-mode="diagram">Diagramm</button>
+        </div>
+      </div>
+    </div>
+
+    <div data-pillars-mode="cards">
+      <div class="pillars-cards">
+        {PILLARS.map((p) => (
+          <div class="pillar-card">
+            <div class="pillar-roman">{p.n}.</div>
+            <h3>{p.title}</h3>
+            <div class="pillar-q">{p.q}</div>
+            <p>{p.body}</p>
+            <div class="pillar-tags">{p.tags.map((t) => <span>{t}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div data-pillars-mode="list" style="display:none;">
+      <div class="pillars-list">
+        {PILLARS.map((p) => (
+          <div class="pillar-row">
+            <div class="pillar-roman">{p.n}.</div>
+            <div><h3>{p.title}</h3><div class="pillar-q">{p.q}</div></div>
+            <div>
+              <p>{p.body}</p>
+              <div class="pillar-tags" style="margin-top: 14px;">
+                {p.tags.slice(0, 4).map((t) => <span>{t}</span>)}
+                <span style="border-color: transparent; color: var(--ink-3);">+{p.tags.length - 4}</span>
+              </div>
+            </div>
+            <div class="pillar-arrow">→</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div data-pillars-mode="diagram" style="display:none;">
+      <div class="pillars-diagram">
+        <div class="diagram-center"><span>Hypnosystemik</span><strong>vier Säulen</strong></div>
+        {PILLARS.map((p, i) => {
+          const cls = ["tl", "tr", "bl", "br"][i];
+          return (
+            <div class={`diagram-node ${cls}`}>
+              <div class="pillar-roman">{p.n}.</div>
+              <h4>{p.title}</h4>
+              <p>{p.q}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const buttons = document.querySelectorAll('.display-switch button[data-mode]');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-mode');
+      buttons.forEach(b => b.classList.toggle('is-active', b === btn));
+      document.querySelectorAll('[data-pillars-mode]').forEach(panel => {
+        panel.style.display = panel.getAttribute('data-pillars-mode') === mode ? '' : 'none';
+      });
+    });
+  });
+</script>

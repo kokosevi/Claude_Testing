@@ -1,0 +1,36 @@
+---
+---
+<section class="newsletter" id="newsletter">
+  <div class="wrap newsletter-inner">
+    <div>
+      <h2>Die <em>sieben wichtigsten</em> Konzepte der Hypnosystemik — als kostenloses PDF.</h2>
+      <p>Einmal pro Woche eine kurze, sorgfältig kuratierte Zusammenstellung: ein Konzept, eine Praxisübung, ein Lesetipp. Kein Marketing, kein Lärm.</p>
+      <ul class="newsletter-bullets">
+        <li>Sofort: das PDF mit den sieben Schlüsselkonzepten</li>
+        <li>Wöchentlich: Donnerstags, 7 Minuten Lesezeit</li>
+        <li>Jederzeit abbestellbar mit einem Klick</li>
+      </ul>
+    </div>
+    <form class="newsletter-form" id="nl-form">
+      <div class="field-row">
+        <input type="email" required placeholder="deine.adresse@beispiel.de" aria-label="E-Mail-Adresse" id="nl-email" />
+        <button type="submit" id="nl-button">Anmelden</button>
+      </div>
+      <div class="newsletter-fineprint">
+        Mit der Anmeldung stimmst du unserer Datenschutzerklärung zu. Wir versenden ausschließlich redaktionelle Inhalte.
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('nl-form');
+  const btn = document.getElementById('nl-button');
+  if (form && btn) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // TODO: Brevo-API-Anbindung — vorerst nur visuelles Feedback
+      btn.textContent = 'Danke ✓';
+    });
+  }
+</script>

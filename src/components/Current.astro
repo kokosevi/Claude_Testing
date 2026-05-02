@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+const all = await getCollection('aktuell', ({ data }) => !data.draft);
+all.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const items = all.slice(0, 3);
+
+const FALLBACK = [
+  { kind: 'Artikel', date: '22. Apr 2026', title: 'Wenn der innere Kritiker ein Mentor war — Versöhnungsarbeit in zwölf Schritten', excerpt: 'Eine Schritt-für-Schritt-Skizze für die Würdigung dessen, was einmal nötig war — und heute hinderlich wirkt.', author: 'Maren Krüger · 14 Min Lesezeit' },
+  { kind: 'Podcast', date: 'Episode 17', title: 'Symptom als Botschafter — Was Diagnose verdeckt und was sie öffnet', excerpt: 'Im Gespräch mit einer Psychiaterin und einer hypnosystemisch arbeitenden Therapeutin über Wirklichkeitskonstruktion in Klinik und Praxis.', author: '47 Min · Hör- und Lesefassung' },
+];
+
+const display = items.length >= 3 ? items.map(i => ({
+  kind: i.data.kind,
+  date: i.data.date.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' }),
+  title: i.data.title,
+  excerpt: i.data.excerpt,
+  author: i.data.author,
+})) : [
+  ...items.map(i => ({
+    kind: i.data.kind,
+    date: i.data.date.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' }),
+    title: i.data.title,
+    excerpt: i.data.excerpt,
+    author: i.data.author,
+  })),
+  ...FALLBACK
+].slice(0, 3);
+---
+<section class="current">
+  <div class="wrap">
+    <div class="pathways-head">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 24px;"><span class="dot"></span>Aktuell</div>
+        <h2 class="section-title">Diese Woche im Hub.</h2>
+      </div>
+      <a class="what-link" href="#">Alle Beiträge ansehen →</a>
+    </div>
+    <div class="current-grid">
+      {display.map((it) => (
+        <a class="current-item" href="#">
+          <div class="kind"><span>{it.kind}</span><span class="date">{it.date}</span></div>
+          <h4>{it.title}</h4>
+          <p>{it.excerpt}</p>
+          <div class="author">{it.author}</div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
