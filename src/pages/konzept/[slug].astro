@@ -1,0 +1,344 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Footer from "../../components/Footer.astro";
+import { getCollection, getEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const all = await getCollection("konzepte", ({ data }) => !data.draft);
+  return all.map((k) => ({ params: { slug: k.slug }, props: { entry: k } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const d = entry.data;
+
+// Verwandte Konzepte auflösen (Titel laden)
+const verwandte = await Promise.all(
+  d.verwandteKonzepte.map(async (slug) => {
+    try {
+      const e = await getEntry("konzepte", slug);
+      return e ? { slug, title: e.data.title, kurz: e.data.kurzdefinition } : null;
+    } catch { return null; }
+  })
+).then(rs => rs.filter(Boolean));
+
+// YouTube/Vimeo Embed-URL extrahieren
+function embedUrl(url) {
+  const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vm = url.match(/vimeo\.com\/(\d+)/);
+  if (vm) return `https://player.vimeo.com/video/${vm[1]}`;
+  return url;
+}
+---
+<BaseLayout title={d.title} description={d.kurzdefinition} active="Grundlagen">
+  <article class="konzept">
+    <!-- ░░░ Kopf: Breadcrumb · Titel · zweispaltig (Abstract | Infografik) ░░░ -->
+    <header class="konzept-hero">
+      <div class="wrap">
+        <div class="breadcrumb">
+          <a href="/">Start</a><span>/</span>
+          <a href="/konzepte">Konzepte</a><span>/</span>
+          <span style="color: var(--ink);">{d.title}</span>
+        </div>
+        <div class="konzept-meta-top">
+          <span class="eyebrow"><span class="dot"></span>Säule · {d.saeule}</span>
+          <span class="konzept-difficulty mono">{d.schwierigkeit}</span>
+          {d.lesedauer && <span class="konzept-reading mono">{d.lesedauer} Min Lesezeit</span>}
+        </div>
+        <h1 class="konzept-title">{d.title}</h1>
+        {d.untertitel && <p class="konzept-untertitel">{d.untertitel}</p>}
+
+        <div class={`konzept-hero-grid ${d.infografik ? 'has-figure' : 'no-figure'}`}>
+          {/* Mobile: Infografik zuerst (CSS-order steuert das) */}
+          {d.infografik && (
+            <figure class="konzept-hero-figure">
+              <img src={d.infografik.src} alt={d.infografik.alt} />
+              {d.infografik.caption && <figcaption>{d.infografik.caption}</figcaption>}
+            </figure>
+          )}
+
+          <div class="konzept-hero-abstract">
+            <p class="konzept-kurzdefinition">{d.kurzdefinition}</p>
+            {d.auchBekanntAls.length > 0 && (
+              <div class="konzept-aliases">
+                <span class="ui">auch:</span>
+                {d.auchBekanntAls.map((a) => <span class="alias">{a}</span>)}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ░░░ Hauptteil (Markdown-Inhalt) ░░░ -->
+    <section class="konzept-body-wrap">
+      <div class="wrap">
+        <div class="konzept-body">
+          <Content />
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░░ Beispiel aus der Praxis ░░░ -->
+    {d.beispiel && (
+      <section class="konzept-beispiel">
+        <div class="wrap">
+          <div class="beispiel-card">
+            <div class="eyebrow"><span class="dot"></span>Beispiel aus der Praxis</div>
+            <h3>{d.beispiel.titel}</h3>
+            <p>{d.beispiel.text}</p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- ░░░ Verwandte Konzepte (Lego-Verbindungen) ░░░ -->
+    {verwandte.length > 0 && (
+      <section class="konzept-verwandte">
+        <div class="wrap">
+          <h4 class="section-label">Verwandte Konzepte</h4>
+          <div class="verwandte-grid">
+            {verwandte.map((v) => (
+              <a class="verwandt-card" href={`/konzept/${v.slug}`}>
+                <h5>{v.title}</h5>
+                <p>{v.kurz}</p>
+                <span class="arrow">→</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- ░░░ Videos (unten) ░░░ -->
+    {d.videos.length > 0 && (
+      <section class="konzept-videos">
+        <div class="wrap">
+          <h4 class="section-label">Videos &amp; Demonstrationen</h4>
+          <div class="video-grid">
+            {d.videos.map((v) => (
+              <div class="video-card">
+                <div class="video-embed">
+                  <iframe
+                    src={embedUrl(v.url)}
+                    title={v.titel}
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+                <div class="video-meta">
+                  <h5>{v.titel}</h5>
+                  <div class="video-info mono">
+                    {v.sprecher && <span>{v.sprecher}</span>}
+                    {v.dauer && <span>· {v.dauer}</span>}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- ░░░ Literatur ░░░ -->
+    {d.literatur.length > 0 && (
+      <section class="konzept-literatur">
+        <div class="wrap">
+          <h4 class="section-label">Literatur &amp; Vertiefung</h4>
+          <ol class="lit-list">
+            {d.literatur.map((l) => (
+              <li>
+                <span class="lit-autor">{l.autor}</span>
+                {l.jahr && <span class="lit-jahr"> ({l.jahr})</span>}: <em>{l.titel}</em>
+                {l.verlag && <span class="lit-verlag">. {l.verlag}</span>}
+                {l.seite && <span class="lit-seite">, {l.seite}</span>}.
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )}
+
+    <!-- ░░░ Footer-Meta ░░░ -->
+    {(d.autor || d.aktualisiert) && (
+      <div class="wrap konzept-footer-meta">
+        {d.autor && <span>von {d.autor}</span>}
+        {d.aktualisiert && <span>· aktualisiert {d.aktualisiert.toLocaleDateString('de-DE')}</span>}
+      </div>
+    )}
+  </article>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .konzept-hero { padding: 56px 0 64px; border-bottom: 1px solid var(--rule); }
+
+  /* Zweispalten-Hero: Abstract links, Infografik rechts */
+  .konzept-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 56px;
+    align-items: start;
+    margin-top: 36px;
+  }
+  .konzept-hero-grid.no-figure { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .konzept-hero-abstract { order: 1; }
+  .konzept-hero-figure { order: 2; margin: 0; }
+  .konzept-hero-figure img {
+    width: 100%;
+    border: 1px solid var(--rule);
+    background: var(--paper-2);
+    display: block;
+  }
+  .konzept-hero-figure figcaption {
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
+    margin-top: 12px; letter-spacing: 0.04em;
+  }
+  .konzept-meta-top {
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    margin: 28px 0 20px;
+  }
+  .konzept-difficulty, .konzept-reading {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+    border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px;
+  }
+  .konzept-title {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(44px, 5.4vw, 84px); line-height: 1.0;
+    letter-spacing: -0.022em; margin: 0 0 16px;
+  }
+  .konzept-untertitel {
+    font-family: var(--serif); font-style: italic; font-size: 22px;
+    color: var(--accent-ink); margin: 0 0 28px; max-width: 48ch;
+  }
+  .konzept-kurzdefinition {
+    font-family: var(--serif); font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 56ch; margin: 0 0 24px;
+    text-wrap: pretty;
+  }
+  .konzept-aliases {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    font-family: var(--sans); font-size: 12.5px; color: var(--ink-3);
+  }
+  .konzept-aliases .alias {
+    border: 1px solid var(--rule); border-radius: 4px; padding: 3px 8px;
+  }
+
+  .konzept-body-wrap { padding: 72px 0; }
+  .konzept-body {
+    max-width: 680px; font-family: var(--serif); font-size: 18px;
+    line-height: 1.65; color: var(--ink);
+  }
+  .konzept-body :global(h2) {
+    font-size: 28px; font-weight: 400; letter-spacing: -0.014em;
+    line-height: 1.2; margin: 48px 0 16px;
+  }
+  .konzept-body :global(h2:first-child) { margin-top: 0; }
+  .konzept-body :global(h3) {
+    font-family: var(--sans); font-size: 12.5px; font-weight: 500;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-3);
+    margin: 32px 0 8px;
+  }
+  .konzept-body :global(p) { margin: 0 0 18px; text-wrap: pretty; }
+  .konzept-body :global(blockquote) {
+    border-left: 2px solid var(--accent); padding-left: 22px; margin: 28px 0;
+    font-style: italic; font-size: 21px; line-height: 1.4;
+  }
+  .konzept-body :global(ul), .konzept-body :global(ol) { padding-left: 22px; }
+  .konzept-body :global(li) { margin: 6px 0; }
+
+  .konzept-beispiel { padding: 0 0 72px; }
+  .beispiel-card {
+    border-left: 3px solid var(--accent);
+    background: var(--paper-2);
+    padding: 28px 32px;
+    max-width: 680px;
+  }
+  .beispiel-card h3 {
+    font-family: var(--serif); font-weight: 400; font-size: 22px;
+    margin: 16px 0 12px;
+  }
+  .beispiel-card p {
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.55;
+    color: var(--ink); margin: 0;
+  }
+
+  .section-label {
+    font-family: var(--sans); font-size: 11.5px; font-weight: 500;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-3);
+    margin: 0 0 24px;
+  }
+
+  .konzept-verwandte { padding: 56px 0; border-top: 1px solid var(--rule); background: var(--paper-2); }
+  .verwandte-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule);
+  }
+  .verwandt-card {
+    background: var(--paper); padding: 22px 24px; position: relative;
+    transition: background 0.18s ease;
+  }
+  .verwandt-card:hover { background: var(--paper-2); }
+  .verwandt-card h5 {
+    font-family: var(--serif); font-weight: 400; font-size: 20px;
+    line-height: 1.2; margin: 0 0 8px;
+  }
+  .verwandt-card p {
+    font-family: var(--serif); font-size: 14.5px; color: var(--ink-2);
+    margin: 0; line-height: 1.5;
+  }
+  .verwandt-card .arrow {
+    position: absolute; top: 22px; right: 22px;
+    font-family: var(--serif); font-size: 18px; color: var(--ink-3);
+    transition: all 0.2s ease;
+  }
+  .verwandt-card:hover .arrow { color: var(--accent); transform: translateX(3px); }
+
+  .konzept-videos { padding: 72px 0; border-top: 1px solid var(--rule); }
+  .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  .video-card {
+    border: 1px solid var(--rule); background: var(--paper); overflow: hidden;
+  }
+  .video-embed { aspect-ratio: 16/9; background: #000; }
+  .video-embed iframe { width: 100%; height: 100%; display: block; border: 0; }
+  .video-meta { padding: 18px 22px 20px; }
+  .video-meta h5 {
+    font-family: var(--serif); font-weight: 400; font-size: 19px;
+    line-height: 1.25; margin: 0 0 6px;
+  }
+  .video-info {
+    font-size: 11.5px; color: var(--ink-3); letter-spacing: 0.04em;
+    display: flex; gap: 8px;
+  }
+
+  .konzept-literatur { padding: 56px 0; border-top: 1px solid var(--rule); background: var(--paper-2); }
+  .lit-list {
+    max-width: 680px; padding-left: 24px;
+    font-family: var(--serif); font-size: 15.5px; line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .lit-list li { margin: 10px 0; }
+  .lit-autor { color: var(--ink); }
+  .lit-list em { color: var(--ink); }
+
+  .konzept-footer-meta {
+    padding: 28px 0; font-family: var(--mono); font-size: 11.5px;
+    color: var(--ink-3); letter-spacing: 0.02em;
+    display: flex; gap: 12px; border-top: 1px solid var(--rule);
+  }
+
+  @media (max-width: 900px) {
+    .verwandte-grid, .video-grid { grid-template-columns: 1fr !important; }
+    .konzept-hero-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    /* Mobile: Infografik VOR Abstract */
+    .konzept-hero-figure { order: 1; }
+    .konzept-hero-abstract { order: 2; }
+  }
+</style>

@@ -1,6 +1,5 @@
 import { defineCollection, z } from 'astro:content';
 
-// ─── Anwendungsfelder ───────────────────────────────────────
 const anwendungsfelder = defineCollection({
   type: 'content',
   schema: z.object({
@@ -15,7 +14,6 @@ const anwendungsfelder = defineCollection({
   }),
 });
 
-// ─── Artikel (Säulen I–IV) ──────────────────────────────────
 const artikel = defineCollection({
   type: 'content',
   schema: z.object({
@@ -31,7 +29,6 @@ const artikel = defineCollection({
   }),
 });
 
-// ─── Aktuell (News/Events) ──────────────────────────────────
 const aktuell = defineCollection({
   type: 'content',
   schema: z.object({
@@ -44,4 +41,61 @@ const aktuell = defineCollection({
   }),
 });
 
-export const collections = { anwendungsfelder, artikel, aktuell };
+// ─── Konzepte (Lego-Bausteine) ──────────────────────────────
+// Jedes Konzept hat ein einheitliches Schema, sodass alle Konzept-Seiten
+// gleich aufgebaut sind: Titel · Kurzdefinition · Infografik · Hauptteil · Beispiel · Verwandte · Videos · Literatur
+const konzepte = defineCollection({
+  type: 'content',
+  schema: z.object({
+    // Pflichtfelder
+    title: z.string(),                             // z.B. "Pacing"
+    kurzdefinition: z.string(),                    // 1–2 Sätze, prominent oben
+    saeule: z.enum(['Grundlagen', 'Modelle', 'Handwerk', 'Anwendungsfelder']),
+
+    // Optionale Anreicherung
+    untertitel: z.string().optional(),             // z.B. "Im Tempo der Klient:in mitgehen"
+    auchBekanntAls: z.array(z.string()).default([]), // Synonyme, EN-Begriffe
+    schwierigkeit: z.enum(['Einsteiger', 'Mittel', 'Fortgeschritten']).default('Einsteiger'),
+    lesedauer: z.number().optional(),
+
+    // Infografik (zentral)
+    infografik: z.object({
+      src: z.string(),                             // /infografiken/pacing.svg
+      alt: z.string(),
+      caption: z.string().optional(),
+    }).optional(),
+
+    // Konkretes Beispiel aus der Praxis
+    beispiel: z.object({
+      titel: z.string(),
+      text: z.string(),
+    }).optional(),
+
+    // Verlinkung zu anderen Konzepten (slug-basiert)
+    verwandteKonzepte: z.array(z.string()).default([]),
+
+    // Videos (unten am Ende)
+    videos: z.array(z.object({
+      titel: z.string(),
+      url: z.string(),                             // YouTube/Vimeo/eigen
+      dauer: z.string().optional(),                // z.B. "12:34"
+      sprecher: z.string().optional(),
+    })).default([]),
+
+    // Literatur
+    literatur: z.array(z.object({
+      autor: z.string(),
+      titel: z.string(),
+      jahr: z.number().optional(),
+      verlag: z.string().optional(),
+      seite: z.string().optional(),                // z.B. "S. 142–158"
+    })).default([]),
+
+    // Meta
+    autor: z.string().optional(),
+    aktualisiert: z.coerce.date().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { anwendungsfelder, artikel, aktuell, konzepte };
