@@ -8,15 +8,143 @@ const items = ["Grundlagen", "Modelle", "Handwerk", "Anwendungsfelder", "Glossar
       <span class="mark"></span>
       Sinnorientiert <small>der Hypnosystemik-Hub</small>
     </a>
-    <nav class="nav">
+
+    <nav class="nav nav-desktop">
       {items.map((x) => (
         <a href={`/${x.toLowerCase()}`} class={x === active ? "active" : ""}>{x}</a>
       ))}
     </nav>
-    <a href="#newsletter" class="topbar-cta">Newsletter</a>
+    <a href="#newsletter" class="topbar-cta nav-desktop">Newsletter</a>
+
+    <button
+      class="burger"
+      type="button"
+      aria-label="Menü öffnen"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      id="burger-btn"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- ░░ Mobile Menu Panel ░░ -->
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <nav class="mobile-nav">
+      {items.map((x) => (
+        <a href={`/${x.toLowerCase()}`} class={x === active ? "active" : ""}>{x}</a>
+      ))}
+      <a href="#newsletter" class="mobile-cta">Newsletter</a>
+    </nav>
   </div>
 </header>
 
+<script>
+  const btn = document.getElementById('burger-btn');
+  const menu = document.getElementById('mobile-menu');
+  const body = document.body;
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      menu.setAttribute('aria-hidden', open ? 'true' : 'false');
+      btn.classList.toggle('is-open', !open);
+      menu.classList.toggle('is-open', !open);
+      body.style.overflow = open ? '' : 'hidden';
+    });
+    // Close on link click
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      btn.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'true');
+      btn.classList.remove('is-open');
+      menu.classList.remove('is-open');
+      body.style.overflow = '';
+    }));
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        btn.click();
+      }
+    });
+  }
+</script>
+
 <style>
-  /* Styles würden hier aus styles.css migriert werden */
+  /* ░░ Burger Button (mobile only) ░░ */
+  .burger {
+    display: none;
+    background: none; border: 0; padding: 8px; cursor: pointer;
+    width: 40px; height: 40px;
+    flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+    margin-left: auto;
+  }
+  .burger span {
+    display: block; width: 22px; height: 1.4px; background: var(--ink);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+    transform-origin: center;
+  }
+  .burger.is-open span:nth-child(1) { transform: translateY(6.4px) rotate(45deg); }
+  .burger.is-open span:nth-child(2) { opacity: 0; }
+  .burger.is-open span:nth-child(3) { transform: translateY(-6.4px) rotate(-45deg); }
+
+  /* ░░ Mobile Menu Panel ░░ */
+  .mobile-menu {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--paper);
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease;
+    padding: 96px 32px 48px;
+    overflow-y: auto;
+  }
+  .mobile-menu.is-open { opacity: 1; pointer-events: auto; }
+
+  .mobile-nav {
+    display: flex; flex-direction: column; gap: 4px;
+    max-width: 480px; margin: 0 auto;
+  }
+  .mobile-nav a {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.15s ease, padding-left 0.18s ease;
+  }
+  .mobile-nav a:hover, .mobile-nav a.active {
+    color: var(--accent);
+    padding-left: 8px;
+  }
+  .mobile-nav a.active::before {
+    content: "—  ";
+    color: var(--accent);
+  }
+  .mobile-nav .mobile-cta {
+    margin-top: 28px;
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 14px 22px;
+    text-align: center;
+    color: var(--ink);
+  }
+  .mobile-nav .mobile-cta:hover {
+    background: var(--ink); color: var(--paper); padding-left: 22px;
+  }
+  .mobile-nav .mobile-cta::before { content: ""; }
+
+  /* ░░ Breakpoint ░░ */
+  @media (max-width: 860px) {
+    .nav-desktop { display: none !important; }
+    .burger { display: flex; }
+  }
 </style>
