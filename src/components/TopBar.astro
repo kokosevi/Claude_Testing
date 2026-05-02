@@ -29,17 +29,17 @@ const items = ["Grundlagen", "Modelle", "Handwerk", "Anwendungsfelder", "Glossar
       <span></span>
     </button>
   </div>
-
-  <!-- ░░ Mobile Menu Panel ░░ -->
-  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-    <nav class="mobile-nav">
-      {items.map((x) => (
-        <a href={`/${x.toLowerCase()}`} class={x === active ? "active" : ""}>{x}</a>
-      ))}
-      <a href="#newsletter" class="mobile-cta">Newsletter</a>
-    </nav>
-  </div>
 </header>
+
+<!-- ░░ Mobile Menu Panel — outside header to avoid backdrop-filter containment ░░ -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <nav class="mobile-nav">
+    {items.map((x) => (
+      <a href={`/${x.toLowerCase()}`} class={x === active ? "active" : ""}>{x}</a>
+    ))}
+    <a href="#newsletter" class="mobile-cta">Newsletter</a>
+  </nav>
+</div>
 
 <script>
   const btn = document.getElementById('burger-btn');
@@ -94,7 +94,7 @@ const items = ["Grundlagen", "Modelle", "Handwerk", "Anwendungsfelder", "Glossar
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: var(--paper);
-    z-index: 100;
+    z-index: 40;
     opacity: 0; pointer-events: none;
     transition: opacity 0.22s ease;
     padding: 96px 32px 48px;
